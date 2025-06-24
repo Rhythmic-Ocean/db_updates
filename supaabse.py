@@ -24,7 +24,8 @@ def get_pp(osu_username):
         user = client_updater.get_user(osu_username, GameModeStr.STANDARD)
         pp = round(user.statistics.pp)
         username = user.username
-        return username, pp
+        global_rank = user.statistics.global_rank
+        return username, global_rank, pp
     
 def update_pp():
     print(supabase)
@@ -36,10 +37,10 @@ def update_pp():
     users = response.data
     for user in users:
         osu_id = user.get("osu_id")
-        username,pp = get_pp(osu_id)
+        username, rank,pp = get_pp(osu_id)
         if pp is not None:
-            supabase.table("discord_osu").update({"current_pp": pp}).eq("osu_id", osu_id).execute()
-            print(f"{username}'s, osu id updated.")
+            supabase.table("discord_osu").update({"current_pp": pp, "osu_username": username, "global_rank": rank}).eq("osu_id", osu_id).execute()
+            print(f"{username}'s, osu pp: {pp}, rank: {rank} updated.")
 
 
 
